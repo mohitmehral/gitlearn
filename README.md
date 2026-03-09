@@ -1,75 +1,81 @@
-# 🌳 Learn Git Branching - Interactive Tutorial
+# Learn Git Branching - Interactive Tutorial
 
-An interactive, visual web application for learning Git branching and merging concepts through fun, level-based exercises.
+An interactive, visual web application for learning Git branching and merging concepts through level-based exercises.
 
-## 🎯 Features
+## Features
 
-- 🎮 **6 Progressive Levels** - From basic commits to merge conflicts
-- 🖥️ **Terminal Interface** - Real Git command experience
-- 📊 **Visual Git Graph** - See branches and commits in real-time with smooth animations
-- 💾 **Auto-Save Progress** - Resume from where you left off
-- 🎯 **Smart Version Control** - Cache auto-clears on updates
-- 🔒 **Branch Protection** - Learn about protected branches (main, dev)
-- 🎨 **Beautiful Dark Theme** - Professional VS Code-inspired UI
-- ♿ **Accessible** - Full ARIA support and semantic HTML
-- 📱 **Responsive Design** - Works on desktop and mobile
+- 8 Progressive Levels - From basic commits to complex merge workflows
+- Terminal Interface - Real Git command experience
+- Visual Git Graph - See branches and commits in real-time
+- Auto-Save Progress - Resume from where you left off
+- Branch Protection - Learn about protected branches (main, dev)
+- Dark Theme - VS Code-inspired UI
+- Accessible - Full ARIA support and semantic HTML
+- Responsive Design - Works on desktop and mobile
 
-## 📚 Learning Path
+## Learning Path
 
-1. **Introduction to Git Commits** - Learn basic git commit
-2. **Branching in Git** - Master git branch and checkout
-3. **Merging in Git** - Understand git merge workflow
-4. **Moving Around in Git** - Practice branch navigation
-5. **Deleting Branches** - Learn branch cleanup with git branch -d
-6. **Merge Conflict Simulation** - Handle complex merge scenarios
+1. Your First Commit - Save your work with git commit
+2. Branching in Git - Master git branch and checkout
+3. Merging in Git - Understand git merge workflow
+4. Moving Around in Git - Practice branch navigation
+5. Deleting Branches - Learn branch cleanup with git branch -d
+6. Merge Conflict Simulation - Handle complex merge scenarios
+7. Rebase - Rewriting History - Understand linear history
+8. Final Boss - Complex multi-branch workflow
 
-## 🎮 Commands Supported
+## Commands Supported
 
+- `git config user.name "Name"` - Set your name
 - `git commit` - Create a new commit
 - `git branch <name>` - Create a new branch
 - `git branch -d <name>` - Delete a branch (protected: main, dev)
 - `git checkout <name>` - Switch to a branch
 - `git merge <name>` - Merge a branch into current branch
 
-## 🚀 Deploy to GitHub Pages
+## Deploy to GitHub Pages
 
 1. Push this repository to GitHub
-2. Go to repository Settings → Pages
-3. Select "main" branch as source
-4. Your site will be live at `https://<username>.github.io/<repo-name>/`
+2. Go to repository Settings -> Pages
+3. Select "GitHub Actions" as source
+4. The included workflow will deploy automatically on every push to main
 
-## 💻 Local Development
+## Local Development
 
-Simply open `index.html` in your browser. No build process required!
+Simply open `index.html` in your browser. No build process required.
 
 ```bash
 open index.html
 ```
 
-## 🔧 Technologies
+## Technologies
 
 - Pure HTML5, CSS3, JavaScript (ES6+)
 - LocalStorage API for progress persistence
-- SVG for smooth Git graph visualization
+- SVG for Git graph visualization
 - No dependencies or frameworks
 - Works offline after first load
 
-## 🎨 SEO Optimized
+## License
 
-- Comprehensive meta tags
-- Open Graph protocol support
-- Twitter Card integration
-- Semantic HTML5 structure
-- Accessibility compliant (WCAG 2.1)
+MIT License
 
-## 📝 Version Management
+Copyright (c) 2025 Mohit Mehral
 
-The app uses version-based cache invalidation. When you update `APP_VERSION` in `app.js`, all user progress is automatically cleared to ensure compatibility with new features.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-## 🤝 Contributing
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Feel free to fork, improve, and submit pull requests!
-
-## 📄 License
-
-MIT License - Feel free to use for learning and teaching!
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

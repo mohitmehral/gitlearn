@@ -527,6 +527,11 @@ function visualize() {
 
         g.addEventListener('mouseenter', () => tip.setAttribute('opacity', 1));
         g.addEventListener('mouseleave', () => tip.setAttribute('opacity', 0));
+        g.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            svg.querySelectorAll('.commit-tooltip').forEach(t => t.setAttribute('opacity', 0));
+            tip.setAttribute('opacity', 1);
+        }, { passive: false });
 
         svg.appendChild(g);
     });

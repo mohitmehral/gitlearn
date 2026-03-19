@@ -21,6 +21,13 @@
   td:first-child { font-family: 'Courier New', monospace; color: #98c379; width: 55%; padding-right: 8px; }
   td:last-child { color: #abb2bf; }
   .footer { margin-top: 24px; text-align: center; color: #5c6370; font-size: 0.75em; }
+  @media (max-width: 600px) {
+    body { padding: 16px; }
+    h1 { font-size: 1.3em; }
+    .grid { grid-template-columns: 1fr; gap: 14px; }
+    td { font-size: 0.8em; }
+    td:first-child { width: 50%; }
+  }
   @media print {
     body { background: #fff; color: #222; padding: 20px; }
     .section { background: #f5f5f5; border-radius: 4px; }

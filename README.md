@@ -4,7 +4,7 @@ An interactive, visual web application for learning Git branching and merging co
 
 ## Features
 
-- 8 Progressive Levels - From basic commits to complex merge workflows
+- 8 Progressive Levels - From repo creation to complex merge workflows
 - Terminal Interface - Real Git command experience
 - Visual Git Graph - See branches and commits in real-time
 - Auto-Save Progress - Resume from where you left off
@@ -15,30 +15,70 @@ An interactive, visual web application for learning Git branching and merging co
 
 ## Learning Path
 
-1. Your First Commit - Save your work with git commit
-2. Branching in Git - Master git branch and checkout
-3. Merging in Git - Understand git merge workflow
-4. Moving Around in Git - Practice branch navigation
-5. Deleting Branches - Learn branch cleanup with git branch -d
+1. Create Your First Repository - Simulate GitHub repo creation, git init, commit & push
+2. Branching & Committing - Create feature1 branch, make commits, switch between branches
+3. Merging a Feature Branch - Create feature2, commit, and merge into main
+4. Multi-Feature Merge - Create feature3 and merge all features into main
+5. Deleting Branches - Clean up old feature branches and watch them disappear from the graph
 6. Merge Conflict Simulation - Handle complex merge scenarios
 7. Rebase - Rewriting History - Understand linear history
 8. Final Boss - Complex multi-branch workflow
 
 ## Commands Supported
 
+- `curl` - Simulate GitHub API repo creation
+- `git init` - Initialize a local repository
+- `git add .` - Stage files
 - `git config user.name "Name"` - Set your name
-- `git commit` - Create a new commit
+- `git commit` / `git commit -m "msg"` - Create a new commit
 - `git branch <name>` - Create a new branch
 - `git branch -d <name>` - Delete a branch (protected: main, dev)
 - `git checkout <name>` - Switch to a branch
 - `git merge <name>` - Merge a branch into current branch
+- `git remote add origin <url>` - Add a remote
+- `git push -u origin main` - Push to remote
 
-## Deploy to GitHub Pages
+## Creating a GitHub Personal Access Token (PAT) for Real CLI Usage
 
-1. Push this repository to GitHub
-2. Go to repository Settings -> Pages
-3. Select "GitHub Actions" as source
-4. The included workflow will deploy automatically on every push to main
+In this tutorial, the `curl` command and token are simulated. But if you want to create repos from the CLI for real, you'll need a GitHub **Personal Access Token (PAT)**.
+
+### How to Create a PAT
+
+1. Go to [GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens](https://github.com/settings/tokens?type=beta)
+2. Click **"Generate new token"**
+3. Give it a descriptive name (e.g. `cli-repo-access`)
+4. Set an expiration (90 days recommended)
+5. Under **Repository access**, select **"All repositories"** or **"Only select repositories"**
+6. Under **Permissions → Repository permissions**, enable:
+   - **Administration** → Read and write (required to create/delete repos)
+   - **Contents** → Read and write (required to push code)
+   - **Metadata** → Read-only (auto-selected)
+7. Click **"Generate token"** and **copy it immediately** — you won't see it again!
+
+### Using the PAT to Create a Repo from CLI
+
+```bash
+curl -H "Authorization: token ghp_xxxxxxxxxxxxxxxxxxxx" \
+     https://api.github.com/user/repos \
+     -d '{"name":"my-new-repo","private":false}'
+```
+
+### Then Push Your Local Code
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/yourusername/my-new-repo.git
+git push -u origin main
+```
+
+> ⚠️ **Security Tips:**
+>
+> - Never commit your PAT to a repository
+> - Use fine-grained tokens over classic tokens — they follow the principle of least privilege
+> - Set an expiration date and rotate tokens regularly
+> - Store tokens securely using `gh auth login` (GitHub CLI) or a credential manager
 
 ## Local Development
 

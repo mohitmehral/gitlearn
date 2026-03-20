@@ -9,6 +9,48 @@ class GitSimulator {
         this.score = 0;
         this.protectedBranches = ['main', 'dev'];
         this.userName = null;
+        this.repoName = null;
+        this.repoCreated = false;
+        this.repoInitialized = false;
+        this.filesStaged = false;
+        this.remoteUrl = null;
+        this.pushed = false;
+    }
+
+    createRepo(name) {
+        if (this.repoCreated) return { error: `Repository already created` };
+        this.repoName = name;
+        this.repoCreated = true;
+        return { success: `repo_created`, name };
+    }
+
+    init() {
+        if (!this.repoCreated) return { error: `Create a GitHub repo first using curl` };
+        if (this.repoInitialized) return { error: `Git repository already initialized` };
+        this.repoInitialized = true;
+        return { success: `Initialized empty Git repository in ./${this.repoName}/.git/` };
+    }
+
+    add(file) {
+        if (!this.repoInitialized) return { error: `Not a git repository. Run git init first` };
+        this.filesStaged = true;
+        return { success: file === '.' ? `Added all files to staging area` : `Added '${file}' to staging area` };
+    }
+
+    remoteAdd(name, url) {
+        if (!this.repoInitialized) return { error: `Not a git repository. Run git init first` };
+        if (!this.repoCreated) return { error: `fatal: Remote repo not found. You need to create a repository on GitHub first!\nTry: curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user/repos -d '{"name":"yourrepo"}'` };
+        if (this.remoteUrl) return { error: `Remote '${name}' already exists` };
+        this.remoteUrl = url;
+        return { success: `Remote '${name}' added → ${url}` };
+    }
+
+    push(remote, branch) {
+        if (!this.repoCreated) return { error: `fatal: Remote repo does not exist on GitHub!\nYou must create it first using curl before you can push.` };
+        if (!this.remoteUrl) return { error: `No remote configured. Use git remote add origin <url>` };
+        if (this.commits.length === 0) return { error: `Nothing to push. Make a commit first` };
+        this.pushed = true;
+        return { success: `push_complete`, remote, branch };
     }
 
     config(key, value) {
@@ -25,8 +67,8 @@ class GitSimulator {
             return { error: "Please set your name first: git config user.name \"Your Name\"" };
         }
         this.commitCounter++;
-        const commit = { 
-            id: `C${this.commitCounter}`, 
+        const commit = {
+            id: `C${this.commitCounter}`,
             message,
             parent: this.HEAD,
             branch: this.currentBranch,
@@ -49,7 +91,24 @@ class GitSimulator {
         if (this.protectedBranches.includes(name)) return { error: `Cannot delete protected branch '${name}'` };
         if (name === this.currentBranch) return { error: `Cannot delete the current branch '${name}'` };
         delete this.branches[name];
-        return { success: `Deleted branch '${name}'` };
+        // Remove orphaned commits not reachable from any remaining branch
+        const reachable = new Set();
+        Object.values(this.branches).forEach(commitId => {
+            const visited = new Set();
+            let id = commitId;
+            while (id && !visited.has(id)) {
+                visited.add(id);
+                reachable.add(id);
+                const c = this.commits.find(cm => cm.id === id);
+                if (c) {
+                    id = c.parent;
+                    if (c.mergeParent) reachable.add(c.mergeParent);
+                } else break;
+            }
+        });
+        const removed = this.commits.filter(c => !reachable.has(c.id));
+        this.commits = this.commits.filter(c => reachable.has(c.id));
+        return { success: `Deleted branch '${name}'`, removedCount: removed.length };
     }
 
     checkout(name) {
@@ -62,7 +121,7 @@ class GitSimulator {
     merge(branchName) {
         if (this.branches[branchName] === undefined) return { error: `Branch '${branchName}' does not exist` };
         if (branchName === this.currentBranch) return { error: `Cannot merge branch into itself` };
-        
+
         this.commitCounter++;
         const mergeCommit = {
             id: `M${this.commitCounter}`,
@@ -84,6 +143,12 @@ class GitSimulator {
         this.HEAD = null;
         this.commitCounter = 0;
         this.userName = null;
+        this.repoName = null;
+        this.repoCreated = false;
+        this.repoInitialized = false;
+        this.filesStaged = false;
+        this.remoteUrl = null;
+        this.pushed = false;
     }
 
     getCommitsByBranch() {
@@ -108,17 +173,24 @@ class GitSimulator {
 const levels = [
     {
         id: 1,
-        title: "Your First Commit - Save Your Work!",
+        title: "Create Your First Repository",
         instruction: `<p>Welcome, future Git master! 👋</p>
-        <p>You just wrote your first Python program (check the code editor below). But there's a problem... <strong>it's not saved yet!</strong></p>
-        <p>In the real world, you'd press <code>Ctrl+S</code> to save. In Git, we use <code>git commit</code>.</p>
-        <p><strong>Your mission:</strong></p>
-        <p>1. Set your name: <code>git config user.name "Your Name"</code><br>
-        2. Save your work: <code>git commit</code></p>`,
-        goal: () => git.commits.length >= 1 && git.userName,
-        points: 10,
+        <p>Before you can track code, you need a <strong>repository</strong>. In the real world you'd create one on GitHub, then set it up locally.</p>
+        <p>Let's simulate the entire workflow!</p>
+        <p><strong>Your mission (follow each step):</strong></p>
+        <p>1. Set your name: <code>git config user.name "Your Name"</code></p>
+        <p>2. Create a GitHub repo (simulated):<br>
+        <code>curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user/repos -d '{"name":"myproject"}'</code><br>
+        <small>💡 Use any repo name you like — the token is simulated!</small></p>
+        <p>3. Initialize locally: <code>git init</code></p>
+        <p>4. Stage your files: <code>git add .</code></p>
+        <p>5. Make your first commit: <code>git commit -m "Initial commit"</code></p>
+        <p>6. Link to GitHub: <code>git remote add origin https://github.com/you/myproject.git</code></p>
+        <p>7. Push it live: <code>git push -u origin main</code></p>`,
+        goal: () => git.repoCreated && git.repoInitialized && git.commits.length >= 1 && git.pushed,
+        points: 15,
         showCode: true,
-        codeContent: `# boss.py
+        codeContent: `# boss.py — your first project file!
 def main():
     print("I am the Boss")
     print("I consent to show my name!")
@@ -128,58 +200,70 @@ if __name__ == "__main__":
     },
     {
         id: 2,
-        title: "Branching in Git",
-        instruction: `<p>Branches in Git are incredibly lightweight as well. They are simply pointers to a specific commit — nothing more.</p>
+        title: "Branching & Committing",
+        instruction: `<p>Branches in Git are incredibly lightweight. They are simply pointers to a specific commit — nothing more.</p>
         <p>This is why many Git enthusiasts chant the mantra: <em>branch early, and branch often</em></p>
-        <p>Because there is no storage / memory overhead with making many branches, it's easier to logically divide up your work than have big beefy branches.</p>
-        <p><strong>To complete this level:</strong> Create a new branch named <code>bugFix</code> and switch to it.</p>
-        <p>Try: <code>git branch bugFix</code> then <code>git checkout bugFix</code></p>`,
-        goal: () => git.branches.bugFix !== undefined && git.currentBranch === 'bugFix',
+        <p><strong>To complete this level:</strong></p>
+        <p>1. Create a new branch: <code>git branch feature1</code><br>
+        2. Switch to it: <code>git checkout feature1</code><br>
+        3. Make 2 commits on <code>feature1</code> (use <code>git commit -m "your message"</code>)<br>
+        4. Switch back to main: <code>git checkout main</code></p>
+        <p>Watch the graph — your commits will appear on a separate lane! 🎯</p>`,
+        goal: () => git.branches.feature1 !== undefined && git.commits.filter(c => c.branch === 'feature1').length >= 2 && git.currentBranch === 'main',
         points: 20
     },
     {
         id: 3,
-        title: "Merging in Git",
-        instruction: `<p>Great! We now know how to commit and branch. Now we need to learn some kind of way of combining the work from two different branches together.</p>
-        <p>The first method to combine work that we will examine is <code>git merge</code>. Merging in Git creates a special commit that has two unique parents.</p>
+        title: "Merging a Feature Branch",
+        instruction: `<p>Now let's learn how to combine work from two branches using <code>git merge</code>.</p>
+        <p>Merging creates a special commit that has two unique parents — it ties the histories together.</p>
         <p><strong>To complete this level:</strong></p>
-        <p>1. Make a new branch called <code>bugFix</code><br>
-        2. Checkout the <code>bugFix</code> branch with <code>git checkout bugFix</code><br>
-        3. Commit once<br>
-        4. Go back to <code>main</code> with <code>git checkout main</code><br>
-        5. Commit again<br>
-        6. Merge the branch <code>bugFix</code> into <code>main</code> with <code>git merge bugFix</code></p>`,
+        <p>1. Create branch <code>feature2</code>: <code>git branch feature2</code><br>
+        2. Switch to it: <code>git checkout feature2</code><br>
+        3. Make 2 commits on <code>feature2</code><br>
+        4. Switch back: <code>git checkout main</code><br>
+        5. Merge it in: <code>git merge feature2</code></p>
+        <p>See the diamond-shaped merge commit appear in the graph! 💎</p>`,
         goal: () => {
-            const hasFeature = git.branches.bugFix !== undefined;
+            const hasFeature2 = git.branches.feature2 !== undefined;
+            const feature2Commits = git.commits.filter(c => c.branch === 'feature2').length >= 2;
             const hasMerge = git.commits.some(c => c.id.startsWith('M'));
-            return hasFeature && hasMerge && git.currentBranch === 'main';
+            return hasFeature2 && feature2Commits && hasMerge && git.currentBranch === 'main';
         },
         points: 30
     },
     {
         id: 4,
-        title: "Moving Around in Git",
-        instruction: `<p>Before we get to some of the more advanced features of Git, it's important to understand different ways to move through the commit tree.</p>
-        <p>Once you're comfortable moving around, your powers with other git commands will be amplified!</p>
-        <p><strong>To complete this level:</strong> Create a branch, make some commits, and practice switching between branches.</p>
-        <p>Create branch <code>feature</code>, checkout to it, make 2 commits, then return to <code>main</code>.</p>`,
-        goal: () => git.commits.filter(c => c.branch === 'feature').length >= 2 && git.currentBranch === 'main',
+        title: "Multi-Feature Merge",
+        instruction: `<p>In real projects, multiple features are developed in parallel and merged into <code>main</code> one by one.</p>
+        <p>You already have <code>feature1</code> and <code>feature2</code> from previous levels. Now let's add a third and merge them all!</p>
+        <p><strong>To complete this level:</strong></p>
+        <p>1. Create branch <code>feature3</code>: <code>git branch feature3</code><br>
+        2. Switch to it: <code>git checkout feature3</code><br>
+        3. Make 2 commits on <code>feature3</code><br>
+        4. Switch back: <code>git checkout main</code><br>
+        5. Merge <code>feature1</code>: <code>git merge feature1</code><br>
+        6. Merge <code>feature3</code>: <code>git merge feature3</code></p>
+        <p>Watch the graph light up with multiple merge lines! 🚀</p>`,
+        goal: () => {
+            const hasFeature3 = git.branches.feature3 !== undefined;
+            const feature3Commits = git.commits.filter(c => c.branch === 'feature3').length >= 2;
+            const mergeCount = git.commits.filter(c => c.id.startsWith('M')).length;
+            return hasFeature3 && feature3Commits && mergeCount >= 3 && git.currentBranch === 'main';
+        },
         points: 40
     },
     {
         id: 5,
         title: "Deleting Branches",
-        instruction: `<p>After merging a feature branch, it's good practice to delete it to keep your repository clean.</p>
-        <p>You can delete a branch using <code>git branch -d branchname</code>. Note that main and dev branches are protected and cannot be deleted.</p>
+        instruction: `<p>After merging, it's good practice to <strong>clean up</strong> old feature branches to keep your repo tidy.</p>
+        <p>You can delete a branch using <code>git branch -d branchname</code>. Note: <code>main</code> and <code>dev</code> are protected and cannot be deleted.</p>
+        <p>You currently have <code>feature1</code>, <code>feature2</code>, and <code>feature3</code>. Let's clean up the oldest one!</p>
         <p><strong>To complete this level:</strong></p>
-        <p>1. Create branch <code>temp</code><br>
-        2. Make 1 commit on <code>temp</code><br>
-        3. Checkout to <code>main</code><br>
-        4. Delete the <code>temp</code> branch using <code>git branch -d temp</code></p>`,
+        <p>1. Delete the oldest feature branch: <code>git branch -d feature1</code></p>
+        <p>Watch the graph — <code>feature1</code> and its commits will disappear! The branch is gone, but merged work stays safe in <code>main</code>. 🧹</p>`,
         goal: () => {
-            const hadTemp = git.commits.some(c => c.branch === 'temp');
-            const tempDeleted = git.branches.temp === undefined;
-            return hadTemp && tempDeleted && git.currentBranch === 'main';
+            return git.branches.feature1 === undefined && git.currentBranch === 'main';
         },
         points: 50
     },
@@ -244,7 +328,7 @@ if __name__ == "__main__":
 
 const git = new GitSimulator();
 let currentLevel = 0;
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '2.1.0';
 
 function updateUserBadge(name) {
     const vizBadge = document.getElementById('viz-user-badge');
@@ -268,7 +352,13 @@ function saveProgress() {
         HEAD: git.HEAD,
         commitCounter: git.commitCounter,
         score: git.score,
-        userName: git.userName
+        userName: git.userName,
+        repoName: git.repoName,
+        repoCreated: git.repoCreated,
+        repoInitialized: git.repoInitialized,
+        filesStaged: git.filesStaged,
+        remoteUrl: git.remoteUrl,
+        pushed: git.pushed
     };
     localStorage.setItem('gitLearningProgress', JSON.stringify(state));
 }
@@ -292,6 +382,12 @@ function loadProgress() {
         git.commitCounter = state.commitCounter || 0;
         git.score = state.score || 0;
         git.userName = state.userName || null;
+        git.repoName = state.repoName || null;
+        git.repoCreated = state.repoCreated || false;
+        git.repoInitialized = state.repoInitialized || false;
+        git.filesStaged = state.filesStaged || false;
+        git.remoteUrl = state.remoteUrl || null;
+        git.pushed = state.pushed || false;
         return true;
     } catch (e) {
         localStorage.removeItem('gitLearningProgress');
@@ -350,7 +446,27 @@ function handleCommand(e) {
     
     let result;
     
-    if (command === 'git') {
+    if (command === 'curl') {
+        const fullCmd = input;
+        const nameMatch = fullCmd.match(/"name"\s*:\s*"([^"]+)"/);
+        if (nameMatch) {
+            result = git.createRepo(nameMatch[1]);
+            if (result.error) {
+                addOutput(result.error, 'error');
+            } else {
+                addOutput(`{`, 'success');
+                addOutput(`  "id": ${Math.floor(Math.random() * 900000000) + 100000000},`, 'success');
+                addOutput(`  "name": "${result.name}",`, 'success');
+                addOutput(`  "full_name": "${git.userName || 'you'}/${result.name}",`, 'success');
+                addOutput(`  "html_url": "https://github.com/${git.userName || 'you'}/${result.name}",`, 'success');
+                addOutput(`  "created_at": "${new Date().toISOString()}"`, 'success');
+                addOutput(`}`, 'success');
+                addOutput(`✓ Repository '${result.name}' created on GitHub!`, 'success');
+            }
+        } else {
+            addOutput('Could not parse repo name. Use: curl ... -d \'{"name":"reponame"}\'', 'error');
+        }
+    } else if (command === 'git') {
         const gitCmd = args[0];
         const gitArgs = args.slice(1);
         
@@ -365,18 +481,79 @@ function handleCommand(e) {
                     addOutput('Usage: git config user.name "Your Name"', 'error');
                 }
                 break;
-            case 'commit':
-                result = git.commit(gitArgs.join(' '));
+            case 'init':
+                result = git.init();
+                addOutput(result.success || result.error, result.success ? 'success' : 'error');
+                break;
+            case 'add':
+                result = git.add(gitArgs[0] || '.');
+                addOutput(result.success || result.error, result.success ? 'success' : 'error');
+                break;
+            case 'remote':
+                if (gitArgs[0] === 'add' && gitArgs[1] && gitArgs[2]) {
+                    result = git.remoteAdd(gitArgs[1], gitArgs[2]);
+                    addOutput(result.success || result.error, result.success ? 'success' : 'error');
+                } else {
+                    addOutput('Usage: git remote add <name> <url>', 'error');
+                }
+                break;
+            case 'push':
+                const pushFlags = gitArgs.filter(a => a.startsWith('-'));
+                const pushPositional = gitArgs.filter(a => !a.startsWith('-'));
+                result = git.push(pushPositional[0] || 'origin', pushPositional[1] || 'main');
                 if (result.error) {
                     addOutput(result.error, 'error');
                 } else {
-                    addOutput(`[${git.currentBranch} ${result.id}] Commit created by ${result.author}`, 'success');
+                    addOutput(`Enumerating objects: ${git.commits.length}, done.`, 'info');
+                    addOutput(`Counting objects: 100% (${git.commits.length}/${git.commits.length}), done.`, 'info');
+                    addOutput(`Writing objects: 100%, done.`, 'info');
+                    if (levels[currentLevel].id === 1) {
+                        addOutput(``, '');
+                        addOutput(`📁 Pushing project to ${git.remoteUrl}`, 'info');
+                        addOutput(`  ${git.repoName}/`, 'info');
+                        addOutput(`  ├── .git/`, 'info');
+                        addOutput(`  │   ├── HEAD`, 'info');
+                        addOutput(`  │   ├── config`, 'info');
+                        addOutput(`  │   ├── objects/`, 'info');
+                        addOutput(`  │   └── refs/`, 'info');
+                        addOutput(`  └── boss.py`, 'success');
+                        addOutput(``, '');
+                    }
+                    addOutput(`To ${git.remoteUrl}`, 'success');
+                    addOutput(` * [new branch]      ${result.branch} -> ${result.branch}`, 'success');
+                    if (pushFlags.includes('-u')) {
+                        addOutput(`Branch '${result.branch}' set up to track remote branch '${result.branch}'.`, 'success');
+                    }
+                    addOutput(`✓ Push complete! Your code is live on GitHub!`, 'success');
+                }
+                break;
+            case 'commit':
+                const msgFlag = gitArgs.indexOf('-m');
+                const msg = msgFlag !== -1 ? gitArgs.slice(msgFlag + 1).join(' ').replace(/["']/g, '') : gitArgs.join(' ');
+                result = git.commit(msg);
+                if (result.error) {
+                    addOutput(result.error, 'error');
+                } else {
+                    addOutput(`[${git.currentBranch} ${result.id}] ${result.message || 'Commit created'} by ${result.author}`, 'success');
+                    if (levels[currentLevel].id === 1) {
+                        addOutput(`💾 boss.py saved! Your work is now tracked by Git.`, 'success');
+                        const indicator = document.getElementById('save-indicator');
+                        indicator.textContent = '✓ saved';
+                        indicator.className = 'saved-indicator';
+                    }
                 }
                 break;
             case 'branch':
                 if (gitArgs[0] === '-d' && gitArgs[1]) {
                     result = git.deleteBranch(gitArgs[1]);
-                    addOutput(result.success || result.error, result.success ? 'success' : 'error');
+                    if (result.success) {
+                        addOutput(result.success, 'success');
+                        if (result.removedCount > 0) {
+                            addOutput(`🧹 Cleaned up ${result.removedCount} orphaned commit(s) from the graph.`, 'warning');
+                        }
+                    } else {
+                        addOutput(result.error, 'error');
+                    }
                 } else {
                     result = git.branch(gitArgs[0]);
                     addOutput(result.success || result.error, result.success ? 'success' : 'error');
@@ -394,7 +571,7 @@ function handleCommand(e) {
                 addOutput(`Unknown command: ${gitCmd}`, 'error');
         }
     } else {
-        addOutput(`Command not found. Use 'git' commands only.`, 'error');
+        addOutput(`Command not found. Try 'git' or 'curl' commands.`, 'error');
     }
     
     visualize();
@@ -402,12 +579,33 @@ function handleCommand(e) {
     saveProgress();
 }
 
+function addLevelDivider(levelId, title) {
+    const output = document.getElementById('output');
+    const now = new Date();
+    const dateStr = now.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const divider = document.createElement('div');
+    divider.className = 'level-divider';
+    divider.textContent = `── Level ${levelId}: ${title} ── ${dateStr} ${timeStr} ──`;
+    output.appendChild(divider);
+    output.scrollTop = output.scrollHeight;
+}
+
 function addOutput(text, className = '') {
     const output = document.getElementById('output');
-    const line = document.createElement('div');
-    line.className = `output-line ${className}`;
-    line.textContent = text;
-    output.appendChild(line);
+    const now = new Date();
+    const ts = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const lines = text.split('\n');
+    lines.forEach(lineText => {
+        const line = document.createElement('div');
+        line.className = `output-line ${className}`;
+        const stamp = document.createElement('span');
+        stamp.className = 'timestamp';
+        stamp.textContent = ts;
+        line.appendChild(stamp);
+        line.appendChild(document.createTextNode(` ${lineText}`));
+        output.appendChild(line);
+    });
     output.scrollTop = output.scrollHeight;
 }
 
@@ -595,11 +793,14 @@ function loadLevel(index) {
     if (level.showCode) {
         codeEditor.classList.remove('hidden');
         document.getElementById('code-content').textContent = level.codeContent;
+        const indicator = document.getElementById('save-indicator');
+        indicator.textContent = '● unsaved';
+        indicator.className = 'unsaved-indicator';
     } else {
         codeEditor.classList.add('hidden');
     }
     
-    document.getElementById('output').innerHTML = '';
+    addLevelDivider(level.id, level.title);
     addOutput(`Level ${level.id}: ${level.title}`, 'info');
     addOutput('Type your git commands below to complete the level.', 'info');
     visualize();
@@ -617,6 +818,7 @@ function resetLevel() {
         git.reset();
         currentLevel = 0;
         updateUserBadge(null);
+        document.getElementById('output').innerHTML = '';
         loadLevel(currentLevel);
         addOutput('Everything reset! Start fresh.', 'warning');
     }

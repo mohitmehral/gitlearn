@@ -8,9 +8,6 @@ An interactive, visual web application for learning Git branching and merging co
 - Terminal Interface - Real Git command experience
 - Visual Git Graph - See branches and commits in real-time
 - Auto-Save Progress - Resume from where you left off
-- Branch Protection - Learn about protected branches (main, dev)
-- Dark Theme - VS Code-inspired UI
-- Accessible - Full ARIA support and semantic HTML
 - Responsive Design - Works on desktop and mobile
 
 ## Learning Path
@@ -45,15 +42,11 @@ In this tutorial, the `curl` command and token are simulated. But if you want to
 ### How to Create a PAT
 
 1. Go to [GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens](https://github.com/settings/tokens?type=beta)
-2. Click **"Generate new token"**
-3. Give it a descriptive name (e.g. `cli-repo-access`)
-4. Set an expiration (90 days recommended)
-5. Under **Repository access**, select **"All repositories"** or **"Only select repositories"**
-6. Under **Permissions → Repository permissions**, enable:
+2. Under **Permissions → Repository permissions**, enable:
    - **Administration** → Read and write (required to create/delete repos)
    - **Contents** → Read and write (required to push code)
    - **Metadata** → Read-only (auto-selected)
-7. Click **"Generate token"** and **copy it immediately** — you won't see it again!
+3. Click **"Generate token"** and **copy it immediately** — you won't see it again!
 
 ### Using the PAT to Create a Repo from CLI
 
@@ -73,12 +66,10 @@ git remote add origin https://github.com/yourusername/my-new-repo.git
 git push -u origin main
 ```
 
-> ⚠️ **Security Tips:**
+> **Security Tips:**
 >
 > - Never commit your PAT to a repository
 > - Use fine-grained tokens over classic tokens — they follow the principle of least privilege
-> - Set an expiration date and rotate tokens regularly
-> - Store tokens securely using `gh auth login` (GitHub CLI) or a credential manager
 
 ## Local Development
 

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn Git branching and merging with a free interactive tutorial. Practice git commit, branch, checkout, and merge in a visual terminal — no install needed. Perfect for beginners.">
+    <meta name="keywords" content="learn git interactive, git branching tutorial, git merge tutorial, git commands practice, git visualization, free git tutorial, git for beginners, interactive git terminal, git branch and merge, version control tutorial">
+    <meta name="author" content="Git Learning Platform">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#282c34">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Learn Git Branching — Free Interactive Git Tutorial">
+    <meta property="og:description" content="Practice git commit, branch, checkout and merge in a live visual terminal. 8 progressive levels, no install needed. The fastest way to learn Git branching.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://copilot-founder.github.io/gitlearn/">
+    <meta property="og:image" content="https://copilot-founder.github.io/gitlearn/preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="GitLearn">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Learn Git Branching — Free Interactive Git Tutorial">
+    <meta name="twitter:description" content="Practice git commit, branch, checkout and merge in a live visual terminal. 8 levels, no install needed.">
+    <meta name="twitter:image" content="https://copilot-founder.github.io/gitlearn/preview.png">
+
+    <link rel="canonical" href="https://copilot-founder.github.io/gitlearn/">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LearningResource",
+      "name": "Learn Git Branching — Interactive Git Tutorial",
+      "description": "A free interactive tutorial to learn Git branching, merging, and version control through 8 hands-on levels with a visual terminal and live commit graph.",
+      "url": "https://copilot-founder.github.io/gitlearn/",
+      "educationalLevel": "Beginner",
+      "learningResourceType": "Interactive",
+      "teaches": ["git commit", "git branch", "git checkout", "git merge", "version control", "Git branching"],
+      "inLanguage": "en",
+      "isAccessibleForFree": true,
+      "author": { "@type": "Person", "name": "Mohit M" }
+    }
+    </script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-45XH9M6KTH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-45XH9M6KTH');
+    </script>
+    
+    <title>Learn Git Branching — Free Interactive Git Tutorial | Practice git commit, branch, merge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1 class="seo-h1">Learn Git Branching — Free Interactive Git Tutorial</h1>
+    <div class="app-container">
+        <div class="left-panel">
+            <div class="level-header">
+                <h2 id="level-title">Introduction to Git Commits</h2>
+                <div class="level-nav">
+                    <button id="prev-btn" class="nav-btn" aria-label="Previous level">← Prev</button>
+                    <span id="level-indicator">Level 1 of 8</span>
+                    <button id="next-btn" class="nav-btn" aria-label="Next level">Next →</button>
+                    <button id="reset-btn" class="reset-btn" aria-label="Reset">↻ Reset</button>
+                </div>
+            </div>
+            <div class="instructions" id="instructions"></div>
+            <div id="code-editor" class="code-editor hidden">
+                <div class="code-header">
+                    <span class="file-icon">📄</span>
+                    <span class="file-name">boss.py</span>
+                    <span id="save-indicator" class="unsaved-indicator">● unsaved</span>
+                </div>
+                <pre id="code-content" class="code-content"></pre>
+            </div>
+            <div class="hint-box" id="hint">
+                💡 <strong>Hint:</strong> Type "show solution" to see the answer &mdash; <a href="git-cheatsheet.png" download="git-cheatsheet.png" class="cheatsheet-link">📎 Git Cheatsheet</a>
+            </div>
+            <div class="privacy-note">
+                🔒 <strong>Privacy Alert:</strong> We're not stalking you! Your name and progress live happily in your browser's localStorage. No servers, no databases, no drama. Just you and your Git journey. 🚀
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="visualization-container">
+                <div class="viz-header">
+                    <div class="viz-title-section">
+                        <span>Git Repository Visualization</span>
+                        <div id="viz-user-badge" class="viz-user-badge hidden">
+                            <span class="badge-icon">👤</span>
+                            <span id="viz-user-name"></span>
+                        </div>
+                    </div>
+                    <div class="viz-controls"></div>
+                </div>
+                <div class="git-viz" id="git-viz" role="img" aria-label="Git commit tree visualization"></div>
+            </div>
+            
+            <div class="terminal-container">
+                <div class="terminal-header">Terminal Input</div>
+                <div class="terminal-input-line">
+                    <span class="prompt" aria-hidden="true">$</span>
+                    <input type="text" id="command-input" placeholder="Type git commands here..." autocomplete="off" spellcheck="false" aria-label="Git command input">
+                </div>
+            </div>
+            
+            <div class="output-container">
+                <div class="output-header">Command Output</div>
+                <div class="terminal-output" id="output" role="log" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+    <a href="https://github.com/mohitmehral" target="_blank" rel="noopener noreferrer" class="dev-credit">Developed by @mohitmehral</a>
+    <script src="app.js"></script>
+</body>
+</html>

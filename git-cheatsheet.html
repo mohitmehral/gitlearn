@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Git Cheatsheet</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #282c34; color: #abb2bf; padding: 32px; }
+  h1 { color: #61afef; font-size: 1.6em; margin-bottom: 4px; }
+  .subtitle { color: #5c6370; font-size: 0.85em; margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .section { background: #21252b; border-radius: 8px; padding: 16px; border-left: 3px solid #61afef; }
+  .section:nth-child(2) { border-color: #98c379; }
+  .section:nth-child(3) { border-color: #c678dd; }
+  .section:nth-child(4) { border-color: #e5c07b; }
+  .section:nth-child(5) { border-color: #56b6c2; }
+  .section:nth-child(6) { border-color: #e06c75; }
+  h2 { font-size: 0.95em; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 5px 0; font-size: 0.85em; vertical-align: top; }
+  td:first-child { font-family: 'Courier New', monospace; color: #98c379; width: 55%; padding-right: 8px; }
+  td:last-child { color: #abb2bf; }
+  .footer { margin-top: 24px; text-align: center; color: #5c6370; font-size: 0.75em; }
+  @media (max-width: 600px) {
+    body { padding: 16px; }
+    h1 { font-size: 1.3em; }
+    .grid { grid-template-columns: 1fr; gap: 14px; }
+    td { font-size: 0.8em; }
+    td:first-child { width: 50%; }
+  }
+  @media print {
+    body { background: #fff; color: #222; padding: 20px; }
+    .section { background: #f5f5f5; border-radius: 4px; }
+    td:first-child { color: #2a7a2a; }
+    td:last-child { color: #444; }
+    h1 { color: #1a5fa8; }
+    h2 { color: #222; }
+    .footer { color: #999; }
+  }
+</style>
+</head>
+<body>
+<h1>📋 Git Cheatsheet</h1>
+<p class="subtitle">Quick reference for everyday Git commands · gitlearn.mohitm.github.io</p>
+<div class="grid">
+
+  <div class="section">
+    <h2>🔧 Setup</h2>
+    <table>
+      <tr><td>git config user.name "Name"</td><td>Set your name</td></tr>
+      <tr><td>git config user.email "e@mail"</td><td>Set your email</td></tr>
+      <tr><td>git init</td><td>Init a new repo</td></tr>
+      <tr><td>git clone &lt;url&gt;</td><td>Clone a remote repo</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>📸 Staging &amp; Committing</h2>
+    <table>
+      <tr><td>git status</td><td>Show working tree status</td></tr>
+      <tr><td>git add &lt;file&gt;</td><td>Stage a file</td></tr>
+      <tr><td>git add .</td><td>Stage all changes</td></tr>
+      <tr><td>git commit -m "msg"</td><td>Commit with message</td></tr>
+      <tr><td>git commit --amend</td><td>Edit last commit</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>🌿 Branching</h2>
+    <table>
+      <tr><td>git branch</td><td>List branches</td></tr>
+      <tr><td>git branch &lt;name&gt;</td><td>Create branch</td></tr>
+      <tr><td>git checkout &lt;name&gt;</td><td>Switch branch</td></tr>
+      <tr><td>git checkout -b &lt;name&gt;</td><td>Create &amp; switch</td></tr>
+      <tr><td>git branch -d &lt;name&gt;</td><td>Delete branch</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>🔀 Merging &amp; Rebasing</h2>
+    <table>
+      <tr><td>git merge &lt;branch&gt;</td><td>Merge into current</td></tr>
+      <tr><td>git rebase &lt;branch&gt;</td><td>Rebase onto branch</td></tr>
+      <tr><td>git rebase -i HEAD~n</td><td>Interactive rebase</td></tr>
+      <tr><td>git cherry-pick &lt;id&gt;</td><td>Apply a commit</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>🌐 Remote</h2>
+    <table>
+      <tr><td>git remote add origin &lt;url&gt;</td><td>Add remote</td></tr>
+      <tr><td>git push origin &lt;branch&gt;</td><td>Push branch</td></tr>
+      <tr><td>git pull</td><td>Fetch &amp; merge</td></tr>
+      <tr><td>git fetch</td><td>Fetch only</td></tr>
+      <tr><td>git push -u origin main</td><td>Push &amp; track</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>🔍 Inspect &amp; Undo</h2>
+    <table>
+      <tr><td>git log --oneline</td><td>Compact history</td></tr>
+      <tr><td>git diff</td><td>Show unstaged diff</td></tr>
+      <tr><td>git stash</td><td>Stash changes</td></tr>
+      <tr><td>git stash pop</td><td>Restore stash</td></tr>
+      <tr><td>git reset --hard HEAD</td><td>Discard all changes</td></tr>
+    </table>
+  </div>
+
+</div>
+<p class="footer">Learn Git interactively → mohitm.github.io/gitlearn</p>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Learn Git Branching - Interactive Tutorial
 
-An interactive, visual web application for learning Git branching and merging concepts through level-based exercises.
+An interactive, visual web application for learning Git branching and merging concepts through level-based exercises. You dont required to install git cli for that
 
 ## Features
 
